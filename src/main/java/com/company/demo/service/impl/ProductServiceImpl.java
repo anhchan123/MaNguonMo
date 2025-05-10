@@ -309,6 +309,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ShortProductInfoDto> getAllProduct() {
+
         return productRepository.getAllProduct();
     }
 

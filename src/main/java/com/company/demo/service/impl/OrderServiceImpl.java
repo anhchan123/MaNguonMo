@@ -182,7 +182,7 @@ public class OrderServiceImpl implements OrderService {
             product = "%%";
         }
 
-        Page<Order> rs = orderRepository.adminGetListOrder(id, name, phone, status, product, PageRequest.of(page, 10, Sort.by("created_at").descending()));
+        Page<Order> rs = orderRepository.adminGetListOrder(id, name, phone, status, product, PageRequest.of(page, 10000, Sort.by("created_at").descending()));
 
         return rs;
     }

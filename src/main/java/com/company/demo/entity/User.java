@@ -14,10 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "users")
-@TypeDef(
-        name = "json",
-        typeClass = JsonStringType.class
-)
+@TypeDef(name = "json", typeClass = JsonStringType.class)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -45,6 +42,15 @@ public class User {
 
     @Column(name = "status", columnDefinition = "BOOLEAN")
     private boolean status;
+
+    @Column(name = "is_verify", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isVerify;
+
+    @Column(name = "verification_token", unique = true, length = 255)
+    private String verificationToken;
+
+    @Column(name = "reset_token", unique = true, length = 255)
+    private String resetToken;  // ✅ Thêm resetToken để đặt lại mật khẩu
 
     @Column(name = "created_at")
     private Timestamp createdAt;

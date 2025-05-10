@@ -116,7 +116,8 @@ public class ShopController {
     }
 
     @GetMapping("/api/tim-kiem")
-    public String searchProduct(Model model, @RequestParam(required = false) String keyword, @RequestParam(required = false) Integer page) {
+    public String searchProduct(Model model, @RequestParam(required = false) String keyword,
+                                @RequestParam(required = false) Integer page) {
         PageableDto result = productService.searchProductByKeyword(keyword, page);
 
         model.addAttribute("totalPages", result.getTotalPages());

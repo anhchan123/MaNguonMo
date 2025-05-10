@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{/layout/layout_admin :: main-fragment(
+                                                ~{:: title},
+                                                ~{:: #css-resources},
+                                                ~{:: #js-resources},
+                                                ~{:: #main-content}
+                                               )}">
+<head>
+    <title>Danh sách người dùng</title>
+    <th:block id="css-resources">
+        <link rel="stylesheet" th:href="@{/adminlte/dist/css/modal_img.css}">
+        <link rel="stylesheet" th:href="@{/adminlte/dist/css/user.css}">
+    </th:block>
+</head>
+<body>
+<main id="main-content">
+    <!-- Breadcrumb -->
+    <div class="row">
+        <div class="col-12">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+                <li class="breadcrumb-item active">Danh sách người dùng</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <button class="btn btn-success" data-toggle="modal" data-target="#modal-add-user">
+            <span class="fa fa-plus mr-1"></span>Thêm người dùng
+        </button>
+        <div class="clear"></div>
+    </div>
+
+    <!-- Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-outline">
+                <div class="card-body pad">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Họ tên</th>
+                                <th>Email</th>
+                                <th>Điện thoại</th>
+                                <th>Địa chỉ</th>
+                                <th>Vai trò</th>
+                                <th>Hành động</th>
+                            </tr>
+                            </thead>
+                            <tbody id="user-list">
+                            <tr th:each="user : ${users}">
+                                <td th:text="${user.fullName}" th:data-id="${user.id}" class="user-fullname"></td>
+                                <td th:text="${user.email}" class="user-email"></td>
+                                <td th:text="${user.phone}" class="user-phone"></td>
+                                <td th:text="${user.address}" class="user-address"></td>
+                                <td th:text="${user.roles}" class="user-roles"></td>
+                                <td>
+                                    <button class="btn" onclick="openUpdateUserModal(this)" th:data-id="${user.id}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal add user -->
+    <div class="modal fade" id="modal-add-user" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Thêm người dùng</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <input class="form-control mb-2" placeholder="Họ tên" id="add-fullname">
+                    <input class="form-control mb-2" placeholder="Email" id="add-email">
+                    <input class="form-control mb-2" placeholder="Số điện thoại" id="add-phone">
+                    <input class="form-control mb-2" placeholder="Địa chỉ" id="add-address">
+                    <input class="form-control mb-2" placeholder="Vai trò (VD: USER,ADMIN)" id="add-roles">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                    <button class="btn btn-primary" onclick="createUser()">Thêm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal update user -->
+    <div class="modal fade" id="modal-update-user" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Cập nhật người dùng</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="update-user-id">
+                    <input class="form-control mb-2" placeholder="Họ tên" id="update-fullname">
+                    <input class="form-control mb-2" placeholder="Số điện thoại" id="update-phone">
+                    <input class="form-control mb-2" placeholder="Địa chỉ" id="update-address">
+                    <input class="form-control mb-2" placeholder="Vai trò" id="update-roles">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                    <button class="btn btn-primary" onclick="updateUser()">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal confirm delete -->
+    <div class="modal fade" id="modal-delete-user" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Xóa người dùng</h5>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="delete-user-id">
+                    <p>Bạn chắc chắn muốn xóa người dùng này?</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                    <button class="btn btn-danger" onclick="deleteUser()">Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block id="js-resources">
+    <script th:inline="javascript">
+        function createUser() {
+            const req = {
+                fullName: $('#add-fullname').val(),
+                email: $('#add-email').val(),
+                phone: $('#add-phone').val(),
+                address: $('#add-address').val(),
+                roles: $('#add-roles').val().split(',')
+            };
+            $.ajax({
+                url: '/api/admin/users',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(req),
+                success: function (data) {
+                    toastr.success('Tạo người dùng thành công');
+                    location.reload();
+                },
+                error: function (xhr) {
+                    toastr.warning(xhr.responseJSON?.message || 'Đã xảy ra lỗi');
+                }
+            });
+        }
+
+        function openUpdateUserModal(btn) {
+            const row = $(btn).closest('tr');
+            const id = $(btn).data('id');
+            $('#update-user-id').val(id);
+            $('#update-fullname').val(row.find('.user-fullname').text());
+            $('#update-phone').val(row.find('.user-phone').text());
+            $('#update-address').val(row.find('.user-address').text());
+            $('#update-roles').val(row.find('.user-roles').text());
+            $('#modal-update-user').modal('show');
+        }
+
+        function updateUser() {
+            const id = $('#update-user-id').val();
+            const req = {
+                fullName: $('#update-fullname').val(),
+                phone: $('#update-phone').val(),
+                address: $('#update-address').val(),
+                roles: $('#update-roles').val().split(',')
+            };
+            $.ajax({
+                url: '/api/admin/users/' + id,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(req),
+                success: function () {
+                    toastr.success('Cập nhật thành công');
+                    location.reload();
+                },
+                error: function (xhr) {
+                    toastr.warning(xhr.responseJSON?.message || 'Đã xảy ra lỗi');
+                }
+            });
+        }
+
+        function confirmDeleteUser(btn) {
+            const id = $(btn).data('id');
+            $('#delete-user-id').val(id);
+            $('#modal-delete-user').modal('show');
+        }
+
+        function deleteUser() {
+            const id = $('#delete-user-id').val();
+            $.ajax({
+                url: '/api/admin/users/' + id,
+                type: 'DELETE',
+                success: function () {
+                    toastr.success('Xóa thành công');
+                    location.reload();
+                },
+                error: function (xhr) {
+                    toastr.warning(xhr.responseJSON?.message || 'Đã xảy ra lỗi');
+                }
+            });
+        }
+    </script>
+</th:block>
+</body>
+</html>

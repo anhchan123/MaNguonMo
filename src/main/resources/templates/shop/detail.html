@@ -47,9 +47,10 @@
                 </div>
                 <div class="slider slider-nav">
                     <div th:each="img, index : ${product.productImages}">
-                        <img class="img-fluid" th:src="${img}" th:alt="'img-'+${index.index}"/>
+                        <img class="img-fluid thumbnail" th:src="${img}" th:data-src="${img}" th:alt="'img-'+${index.index}"/>
                     </div>
                 </div>
+                
             </div>
             <div class="product-info col-lg-6">
                 <div class="title h3">Mô tả sản phẩm</div>
@@ -224,6 +225,13 @@
                 }, 500);
             }
         })
+        $(document).ready(function() {
+    $('.slider-nav .thumbnail').click(function() {
+        let newImage = $(this).attr('data-src');
+        $('.img-zoom-container img').attr('src', newImage);
+    });
+});
+
     </script>
 </th:block>
 </body>

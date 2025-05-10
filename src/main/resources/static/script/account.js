@@ -1,13 +1,13 @@
-$(function() {
-  changeUi()
+$(function () {
+    changeUi()
 })
 
 function changeUi() {
-  $('.nav-sidebar .account').addClass('active');
-  $(".nav-link#account-setting").addClass('active-nav');
+    $('.nav-sidebar .account').addClass('active');
+    $(".nav-link#account-setting").addClass('active-nav');
 }
 
-$('.btn-confirm-change-password').click(function() {
+$('.btn-confirm-change-password').click(function () {
     let oldPassword = $('#old-password').val();
     let newPassword = $('#new-password').val();
     let retypePassword = $('#retype-password').val();
@@ -50,13 +50,13 @@ $('.btn-confirm-change-password').click(function() {
             type: 'POST',
             data: myJSON,
             contentType: "application/json; charset=utf-8",
-            success: function(data) {
+            success: function (data) {
                 toastr.success("Đổi mật khẩu thành công");
                 clearInputChangePassword();
                 $('.modal').modal('hide');
                 formatMoney();
             },
-            error: function(data) {
+            error: function (data) {
                 toastr.warning(data.responseJSON.message);
             },
         });
@@ -76,7 +76,7 @@ $("#changePassword").on("hidden.bs.modal", function () {
     clearInputChangePassword();
 });
 
-$('.update-btn').click(function() {
+$('.update-btn').click(function () {
     let phoneValue = $("#in-user-phone").val();
     let fullNameValue = $("#in-user-fullname").val();
     let addressValue = $('#in-user-address').val();
@@ -114,17 +114,18 @@ $('.update-btn').click(function() {
             type: 'POST',
             data: myJSON,
             contentType: "application/json; charset=utf-8",
-            success: function(data) {
+            success: function (data) {
                 signedValidate(true, fullNameValue);
                 toastr.success("Cập nhật profile thành công");
             },
-            error: function(data) {
+            error: function (data) {
                 toastr.warning(data.responseJSON.message);
             },
-            complete: function() {
+            complete: function () {
                 $("#in-user-fullname").next().hide();
                 $("#in-user-phone").next().hide();
             }
         });
     }
 })
+
